@@ -23,14 +23,14 @@ class UserAuth extends Dbh{
         $conn = $this->db->connect();
         if ($this-> checkEmailExist($email) === true){
             echo '<script>alert("User already registered");
-            window.location="forms/login.php";
+            window.location="./forms/login.php";
             </script>';
         } else if($this->confirmPasswordMatch($password, $confirmPassword)=== true){
             $sql = "INSERT INTO Students (`fullnames`, `email`, `password`, `country`, `gender`) VALUES ('$fullname','$email', '$password', '$country', '$gender')";
             if($conn->query($sql)){
             //    echo "Ok";
             echo " <script>alert('User Successfully registered');
-            window.location='../forms/login.html';
+            window.location='./forms/login.php';
         </script>";
             } else {
                 echo "Opps". $conn->error;
@@ -46,13 +46,10 @@ class UserAuth extends Dbh{
         $result = $conn->query($sql);
         if($result->num_rows > 0){
             $_SESSION['email'] = $email;
-            // header("Location: ../dashboard.php");
-            // echo '<script>alert("Welcome ' . $_SESSION['fullnames'] . ' ");
-            //   window.location="../dashboard.php";
-            //   </script>';
-            echo "user successfully logged in";
+            header("Location: dashboard.php");
+            // echo "user successfully logged in";
         } else {
-            header("Location: ../forms/login.php");
+            header("Location: ./forms/login.php");
         }
     }
 
@@ -107,7 +104,8 @@ class UserAuth extends Dbh{
         $sql = "DELETE FROM Students WHERE id = '$id'";
         if($conn->query($sql) === TRUE){
             // header("refresh:0.5; url=action.php?all");
-            echo 'user deleted successfully';
+            header ("Location: ./forms/register.php");
+            // echo 'user deleted successfully';
 
         } else {
             header("refresh:0.5; url=action.php?all=?message=Error");
@@ -119,8 +117,8 @@ class UserAuth extends Dbh{
         $sql = "SELECT * FROM `Students` WHERE email = '".$email."'";
         $newPass = "UPDATE Students SET password='".$password."' WHERE email ='".$email."'";
         if($conn->query($newPass) === TRUE){
-            echo " <script>alert('User Successfully registered');
-            window.location='../forms/login.php';
+            echo " <script>alert('You have successfully reset password');
+            window.location='./forms/login.php';
         </script>";
         } else {
             header("Location: forms/resetpassword.php?error=1");
@@ -129,7 +127,7 @@ class UserAuth extends Dbh{
 
     public function getUserByUsername($username){
         $conn = $this->db->connect();
-        $sql = "SELECT * FROM Students WHERE username = '$username'";
+        $sql = "SELECT * FROM Students WHERE fullnames = '$username'";
         $result = $conn->query($sql);
         if($result->num_rows > 0){
             return $result->fetch_assoc();
@@ -141,7 +139,7 @@ class UserAuth extends Dbh{
     public function logout($username){
         session_start();
         session_destroy();
-        header('Location: ../index.php');
+        header("Location: ./index.php");
     }
 
     public function confirmPasswordMatch($password, $confirmPassword){
